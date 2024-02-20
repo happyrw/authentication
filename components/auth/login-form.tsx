@@ -38,9 +38,7 @@ const LoginForm = () => {
         startTransition(() => {
             login(data, callbackUrl)
                 .then((data) => {
-                    // const LoginData = data as { error?: string; success?: string; };
                     if(data?.error) {
-                        // form.reset();
                         setError(data?.error);
                     }
 
