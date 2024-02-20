@@ -68,129 +68,27 @@ export const settings = async(values: yup.InferType<typeof settingSchema>) => {
 
 
 {/*
-const form = useForm({
-    resolver = yupResolver(LoginSchema),
-    defaultValues{
-        nam:'',
-        email:''
-    }
-});
 
-const { register, handleSubmit, formState: { errors }} = form;
+const generateVerificationToken = (email: string) => {
+    const token = uuid();
+    const expires_at = new Date() + 3600 * 1000;
 
-const onSubmit = (data) => {
-    login(data)
-        .then((data) => {
-            // data.error
-            // data.success
-        })
-}
-
-<form onSubmit={handleSubmit(onSubmit)}>
-<input
-    type="text"
-    placeholder="Placeholder"
-    {...register("name")}
-    disale={isPending}
-/>
-
-<input
-    type="email"
-    placeholder="Placeholder"
-    {...register("email")}
-    disale={isPending}
-/>
-</form>
-
-const export LoginSchema = yup.object({
-    email: yup.string().email("Invalid email format!").required("Email is required!"),
-})
-
-interface FormErrorProps{
-    message: string,
-}
-
-export const FormError = ({ message } : FormErrorProps ) => {
-    if(!message){
-        return null;
+    const existingToken = await getTokenByEmail(email);
+    
+    if(existingToken) {
+        await db.verificationToken.delete({ where: { id: existingToken.id }})
     }
 
-    return(
-        <p className="">{message}</p>
-    )
-}
-
-interface FormSuccessProps{
-    message: string,
-}
-
-export const FormSuccess = ({ message } : FormSuccessProps ) => {
-    if(!message){
-        return null;
-    }
-
-    return(
-        <p className="">{message}</p>
-    )
-}
-
-export const login = async(values: yup.InferType<typeof LoginSchema>) => {
-    const validatedFields = await LoginSchema.validate(values);
-
-    if(!validatedFields) return { error: "Invalid fields!"}
-
-    const { email, password } = validated;
-    try{
-        await signIn("credentials", email, password, redirect: "/settings")
-    }catch(error){
-        if(error instanceof AuthError){
-            switch
+    const verificationToken = await db.verificationToken.create({ 
+        where: { email },
+        data: {
+            email,
+            token,
+            expires_at
         }
-    }
+    })
+
+    return verificationToken;
 }
-
-declare global{
-    var prisma: PrismaClient | undefined;
-}
-
-export const db = globalThis.prisma || new Prisma();
-if(process.env.NODE_ENV) {
-    globalThis.prisma = db;
-}
-
-
-declare global {
-    var prisma = PrismaClient | undefined;
-}
-
-export const db = globalThis.prisma || new Prisma;
-if(process.env.NODE_ENV){
-    globalThis.prisma = db;
-}
-
-@@unique([email, token])
-
-user User @relation(fields: [userId], references: [id], onDelete: Cascade )
-
-id string @id @default(cuid()) @map("_id")
-npm i -D @types/bcryptjs
-
-
-export default auth((req) => {
-    const { nextUrl } = req;
-    const isLoggedIn = !!req.auth;
-
-    const isApiAuthRoute = nextUrl.pathname.startsWith("/api/auth");
-    const isPublicRoute = nextUrl.pathname.includes(["/", "auth/new-verification"])
-    if(isLoggedIn){
-        return Response.redirect(new URL("/settings", nextUrl))
-    }
-    if(!isLoggedIn && !isPublicRoute){
-        return Response.redirect(new URL("/auth/login", nextUrl))
-    }
-    }
-})
-
-const isAuthRoute = nextUrl.pathname.startsWith(authRoute)
 
 */}

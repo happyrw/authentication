@@ -5,12 +5,7 @@ import { FaGithub } from 'react-icons/fa';
 
 const SocialButtons = () => {
     const socialLogin = async (provider: 'google' | 'github') => {
-        try {
-            const data = await signIn(provider)
-            console.log(data)
-        } catch (error) {
-            console.log(error)
-        }
+        await signIn(provider)
     }
 
   return (

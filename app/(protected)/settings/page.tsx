@@ -34,7 +34,6 @@ const SettingPage = () => {
   });
   const { register, handleSubmit, formState: { errors } } = form;
   const onSubmit = (values: any) =>{
-    // console.log("values", values)
     try {
       values.isTwoFactorEnabled = isToggled;
       startTransition(() =>{

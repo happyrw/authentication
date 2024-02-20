@@ -94,7 +94,7 @@ return (
                 <FormSuccess message={success} />
                 <button disabled={isPending} type='submit' className='bg-gray-300 text-black rounded-lg px-4 py-2'>{showTwoFactor ? "Confirm" : "Sign In"}</button>
             </form>
-            {!showTwoFactor && <><span>Don't have an account? <button className='bg-black text-white rounded-lg px-4 p-[5px]' onClick={() => {
+            {!showTwoFactor && <><span>Do not have an account? <button className='bg-black text-white rounded-lg px-4 p-[5px]' onClick={() => {
                 route.push('/auth/register');
             }}>Sign Up</button></span>
             <SocialButtons />
