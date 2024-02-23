@@ -1,13 +1,13 @@
-import NextAuth, { NextAuthResult } from 'next-auth';
-import authConfig from '@auth.config';
-import { publicRoutes, authRoutes, apiAuthPrefix, DEFAULT_LOGIN_REDIRECT } from '@routes';
-import { NextApiResponse } from 'next';
+import NextAuth from "next-auth";
+import authConfig from "@/auth.config";
+import { DEFAULT_LOGIN_REDIRECT, apiAuthPrefix, authRoutes, publicRoutes, } from "@/routes";
 
-const authHandler = async (req: any, res: NextApiResponse) => {
+
+const { auth } = NextAuth(authConfig);
+
+export default auth((req) => {
   const { nextUrl } = req;
   const isLoggedIn = !!req.auth;
-  console.log(isLoggedIn);
-  console.log('Route: ', req.nextUrl.pathname);
 
   const isApiAuthRoute = nextUrl.pathname.startsWith(apiAuthPrefix);
   const isPublicRoute = publicRoutes.includes(nextUrl.pathname);
@@ -19,9 +19,7 @@ const authHandler = async (req: any, res: NextApiResponse) => {
 
   if (isAuthRoute) {
     if (isLoggedIn) {
-      res.writeHead(302, { Location: new URL(DEFAULT_LOGIN_REDIRECT, nextUrl).toString() });
-      res.end();
-      return;
+      return Response.redirect(new URL(DEFAULT_LOGIN_REDIRECT, nextUrl))
     }
     return null;
   }
@@ -31,24 +29,14 @@ const authHandler = async (req: any, res: NextApiResponse) => {
     if (nextUrl.search) {
       callbackUrl += nextUrl.search;
     }
-    const encodedCallback = encodeURIComponent(callbackUrl);
-    res.writeHead(302, { Location: new URL(`/auth/login?callbackUrl=${encodedCallback}`, nextUrl).toString() });
-    res.end();
-    return;
-  }
 
+    const encodedCallbackUrl = encodeURIComponent(callbackUrl);
+
+    return Response.redirect(new URL(`/auth/login?callbackUrl=${encodedCallbackUrl}`, nextUrl ));
+  }
   return null;
-};
+})
 
-const authResult: NextAuthResult = NextAuth(authConfig);
-
-// Determine the type of authResult.auth to avoid type errors
-const authFunction = typeof authResult.auth === 'function' ? authResult.auth : () => {};
-
-export default async function handler(req: any, res: NextApiResponse) {
-  if (req.method === 'GET') {
-    await authHandler(req, res);
-  } else {
-    res.status(405).end();
-  }
+export const config = {
+  matcher: ['/((?!.+\\.[\\w]+$|_next).*)', '/', '/(api|trpc)(.*)'],
 }
