@@ -1,36 +1,133 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+In my middleware (import { NextRequest, NextResponse } from "next/server";
+import NextAuth from "next-auth";
+import authConfig from "./auth.config";
 
-## Getting Started
+// Routes
+const publicRoute = "/";
+const authRoute = [ "/sign-in", "/sign-up" ];
+const apiAuthPrefix = "/api/auth";
+const privateRoute = "/onboarding";
+const loginRoute = "/sign-in";
 
-First, run the development server:
+const { auth } = NextAuth(authConfig);
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+export default auth((request: NextRequest) => {
+    const nextUrl  = request.nextUrl;
+    const isLoggedIn = !!(request as any).auth;
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+    const isApiAuthRoute = nextUrl.pathname.startsWith(apiAuthPrefix);
+    const isPublicRoute = publicRoute.includes(nextUrl.pathname);
+    const isAuthRoute = authRoute.includes(nextUrl.pathname);
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+    if(isApiAuthRoute) {
+        return NextResponse.next()
+    }
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+    if(isAuthRoute) {
+        if(isLoggedIn) {
+            return NextResponse.redirect(new URL(privateRoute, request.url));
+        }
+        return NextResponse.next()
+    }
 
-## Learn More
+    if(!isPublicRoute && !isLoggedIn) {
+        return NextResponse.redirect(new URL(loginRoute, request.url))
+    }
 
-To learn more about Next.js, take a look at the following resources:
+    return NextResponse.next();
+})
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+export const config = {
+   matcher: ['/((?!.+\\w]+$|_next).*)','/', '/(api|trpc)(.*)'] ,
+}) when I use publicRoute, the image in here ("use client"
+import Image from "next/image";
+import { sidebarLinks } from "../../constants/index";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+function LeftSideBar() {
+    const pathName = usePathname();
+    const user = false;
+    return(
+        <section className="custom-scrollbar leftsidebar">
+            <div className="flex w-full flex-1 flex-col gap-6 px-6">
+                {sidebarLinks.map((link) => {
+                    const isActive = (pathName.includes(link.route) && link.route.length > 1) || pathName === link.route;
+                    return (
+                    <Link 
+                        href={link.route}
+                        key={link.label}
+                        className={`leftsidebar_link ${isActive && "bg-primary-500"}`}
+                    >
+                    <Image
+                        src={link.imgURL}
+                        alt={link.label}
+                        width={24}
+                        height={24}
+                    />
+                    <p className="text-light-1 max-lg:hidden">{link.label}</p>
+                    </Link>
+                )})}
+            </div>
 
-## Deploy on Vercel
+            <div className="mt-10 px-6">
+            {user && 
+                    <div className="flex cursor-pointer gap-4 p-4">
+                        <Image
+                            src="/assets/logout.svg"
+                            alt="logout"
+                            width={24}
+                            height={24}
+                        />
+                        <p className="text-light-2 max-lg-hidden">Logout</p>
+                    </div>
+            }
+            </div>
+        </section>
+    )
+}
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+export default LeftSideBar;) become invisible and the Image comes from (export const sidebarLinks = [
+    {
+      imgURL: "/assets/home.svg",
+      route: "/",
+      label: "Home",
+    },
+    {
+      imgURL: "/assets/search.svg",
+      route: "/search",
+      label: "Search",
+    },
+    {
+      imgURL: "/assets/heart.svg",
+      route: "/activity",
+      label: "Activity",
+    },
+    {
+      imgURL: "/assets/create.svg",
+      route: "/create-thread",
+      label: "Create Thread",
+    },
+    {
+      imgURL: "/assets/community.svg",
+      route: "/communities",
+      label: "Communities",
+    },
+    {
+      imgURL: "/assets/user.svg",
+      route: "/profile",
+      label: "Profile",
+    },
+  ];
+  
+  export const profileTabs = [
+    { value: "threads", label: "Threads", icon: "/assets/reply.svg" },
+    { value: "replies", label: "Replies", icon: "/assets/members.svg" },
+    { value: "tagged", label: "Tagged", icon: "/assets/tag.svg" },
+  ];
+  
+  export const communityTabs = [
+    { value: "threads", label: "Threads", icon: "/assets/reply.svg" },
+    { value: "members", label: "Members", icon: "/assets/members.svg" },
+    { value: "requests", label: "Requests", icon: "/assets/request.svg" },
+  ];). Help me
